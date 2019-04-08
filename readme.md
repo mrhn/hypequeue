@@ -8,3 +8,10 @@ This means that the 20000 handles that needs to be parsed will roughly take 40-5
 In general i do not like this design approach but felt like the cleanest way of battling the rate limiting.
 
 I like redis, for ease of installation and time, i went with database queue driver.
+
+## Problems with queues
+How to handle them, from experience working with queues one of the more imporant aproaches is to being able to restart the whole job chain. What if instagram has down time or the keys are expired? 
+
+To combat this i build a composite key on statistics based on day and user_id, when the job is running it checks if the entry is already there, if it is it does not created duplicate data, this makes it possible to rerun the job chain if something goes run. In my experience this usually comes in handy, when data is bad or similar.
+
+#More to come
