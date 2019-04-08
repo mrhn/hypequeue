@@ -20,7 +20,6 @@ class AddInstagramRelatedTables extends Migration
         });
 
         Schema::create('instagram_user_statistics', function(Blueprint $table) {
-            $table->integer('id', true, true);
             $table->integer('instagram_user_id')->unsigned();
             $table->foreign('instagram_user_id')
                 ->references('id')->on('instagram_users');
