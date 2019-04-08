@@ -15,10 +15,12 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models
  */
-class InstagramUserStatistics extends Model
+class InstagramUserStatistic extends Model
 {
     protected $fillable = [
-        'handle',
+        'followers',
+        'followed',
+        'posts',
     ];
 
     protected $dates = [

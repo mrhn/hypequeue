@@ -32,7 +32,7 @@ class AddInstagramRelatedTables extends Migration
 
             $table->timestamps();
 
-            $table->primary(array('instagram_user_id', 'date'));
+            $table->primary(['instagram_user_id', 'date']);
         });
     }
 

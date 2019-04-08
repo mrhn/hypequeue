@@ -23,4 +23,13 @@ class InstagramDTO
         $this->followed = $followed;
         $this->posts = $posts;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'followers' => $this->followers,
+            'followed' => $this->followed,
+            'posts' => $this->posts,
+        ];
+    }
 }
