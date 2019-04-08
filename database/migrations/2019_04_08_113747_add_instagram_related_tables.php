@@ -26,7 +26,7 @@ class AddInstagramRelatedTables extends Migration
 
             $table->date('date');
             $table->unsignedInteger('followers');
-            $table->unsignedInteger('followed_by');
+            $table->unsignedInteger('followers');
             $table->unsignedInteger('posts');
 
             $table->timestamps();

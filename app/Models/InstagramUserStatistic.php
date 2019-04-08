@@ -21,9 +21,12 @@ class InstagramUserStatistic extends Model
         'followers',
         'followed',
         'posts',
+        'date',
     ];
 
     protected $dates = [
         'date',
     ];
+
+
 }

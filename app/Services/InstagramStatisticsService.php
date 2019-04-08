@@ -26,7 +26,10 @@ class InstagramStatisticsService
             return $statistic;
         }
 
-        $statistic = InstagramUserStatistic::create(
+        /** @var  InstagramUserStatistic$statistic */
+        $statistic = app(InstagramUserStatistic::class);
+
+        $statistic->fill(
             array_merge([
                 'date' => $date,
             ], $data->toArray())

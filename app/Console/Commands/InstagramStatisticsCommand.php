@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 
 class InstagramStatisticsCommand extends Command
 {
-    const INSTAGRAM_QUEUE_NAME = 'instagram-queue-%d';
+    const INSTAGRAM_QUEUE_NAME = 'instagram-%d';
 
     protected $signature = 'instagram:statistics';
 
@@ -29,6 +29,8 @@ class InstagramStatisticsCommand extends Command
     public function __construct()
     {
         parent::__construct();
+
+        $this->instagramQueues = config('instagram.queues');
     }
 
     /**
@@ -42,8 +44,16 @@ class InstagramStatisticsCommand extends Command
 
         while ($instagramUsers->isNotEmpty()) {
             foreach (range(1, $this->instagramQueues) as $queue) {
-                $job = new ScrapeInstagramUser($instagramUsers->shift());
+                /** @var InstagramUser $user */
+                $user = $instagramUsers->shift();
+
+                if (!$user) {
+                    break;
+                }
+
+                $job = new ScrapeInstagramUser($user);
                 $job->onQueue(sprintf(static::INSTAGRAM_QUEUE_NAME, $queue));
+
                 dispatch($job);
             }
         }
