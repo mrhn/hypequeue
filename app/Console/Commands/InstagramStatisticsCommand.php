@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ScrapeInstagramUser;
 use App\Models\InstagramUser;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class InstagramStatisticsCommand extends Command
@@ -21,23 +22,26 @@ class InstagramStatisticsCommand extends Command
      */
     private $instagramQueues;
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
+    private $throttling = 1;
+
+    private $jobsProcessed = 0;
+
+    /** @var Carbon */
+    private $now;
+
+    public function setThrottling(int $throttling): self
+    {
+        $this->throttling = $throttling;
+    }
+
     public function __construct()
     {
         parent::__construct();
 
         $this->instagramQueues = config('instagram.queues');
+        $this->now = now();
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
     public function handle(): void
     {
         $instagramUsers = InstagramUser::all();
@@ -51,11 +55,19 @@ class InstagramStatisticsCommand extends Command
                     break;
                 }
 
-                $job = new ScrapeInstagramUser($user);
-                $job->onQueue(sprintf(static::INSTAGRAM_QUEUE_NAME, $queue));
-
-                dispatch($job);
+                $this->dispatchThrottledJob($user, $queue);
             }
+
+            $this->jobsProcessed++;
         }
+    }
+
+    private function dispatchThrottledJob(InstagramUser $instagramUser, int $queue): void
+    {
+        $job = new ScrapeInstagramUser($instagramUser);
+        $job->onQueue(sprintf(static::INSTAGRAM_QUEUE_NAME, $queue));
+        $job->delay($this->now->copy()->addHour(floor($this->jobsProcessed / $this->throttling)));
+
+        dispatch($job);
     }
 }
