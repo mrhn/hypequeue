@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\InstagramDTO;
+use App\Models\InstagramUser;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use stdClass;
@@ -28,11 +29,11 @@ class InstagramService
         $this->guzzle = $client;
     }
 
-    public function scrape(string $username) : InstagramDTO
+    public function scrape(InstagramUser $user) : InstagramDTO
     {
         // Perfect scenario i would replace the username in the url
         $result = $this->guzzle->get(
-            sprintf(static::URL, $username),
+            sprintf(static::URL, $user->handle),
             [
                 RequestOptions::QUERY => [
                     'access_token' => config('instagram.token')
@@ -46,7 +47,7 @@ class InstagramService
         $json = json_decode($result)->data;
 
         return new InstagramDTO(
-            $username, // should be $json->username if the api was not faked
+            $user->handle, // should be $json->username if the api was not faked
             $json->counts->followed_by,
             $json->counts->follows,
             $json->counts->media
