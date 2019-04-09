@@ -14,4 +14,16 @@ How to handle them, from experience working with queues one of the more imporant
 
 To combat this i build a composite key on statistics based on day and user_id, when the job is running it checks if the entry is already there, if it is it does not created duplicate data, this makes it possible to rerun the job chain if something goes run. In my experience this usually comes in handy, when data is bad or similar.
 
-#More to come
+## Which edge cases could occour // Regressions
+
+- Instagram API going down
+- Throttling by ourselves
+- Errors in Instagram API
+
+Most of these things boils down to retrying, due to each row being checked for uniqueness and except something goes really wrong in dispatching multiple commands simultaneity race conditions should not be a problem. Retrying should not be a problem.
+
+Failures on API or unexpected throttling, right now it expects most executions to go smooth, this setup 100 jobs per 400 can fail once without any problems. My best solution to make this more sturdy, when the errors occour release the job back on the queue based on similar principles to the already existing rate limiter. For solving how many jobs that already had been executed on each queue, use the cache for saving it.
+
+## What’s your testing approach for those edge-cases and regressions?
+
+The main problem is about errors from the instagram api, these can be mocked in fancy ways with [GuzzleMock](http://docs.guzzlephp.org/en/stable/testing.html). Still usually i run my test suite with sync, so in the spirit of this whole interview (not always testing features), i feel this is the solution that is realistic i would hand in, if i got this task as a task that needed to be done fairly quickly tests included. This assignment took me aproximitly 6 hours, i have ranned this example in the command line with the php artisan queue:work --queue=instagram-n command.

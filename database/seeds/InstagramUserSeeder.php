@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Seeder;
 use App\Models\InstagramUser;
-use Faker\Factory;
 
 class InstagramUserSeeder extends Seeder
 {
@@ -13,10 +12,6 @@ class InstagramUserSeeder extends Seeder
      */
     public function run()
     {
-        $faker = Factory::create();
-
-        InstagramUser::create([
-            'handle' => $faker->firstName,
-        ]);
+        factory(InstagramUser::class, 1)->create();
     }
 }

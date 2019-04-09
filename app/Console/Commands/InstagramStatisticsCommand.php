@@ -11,7 +11,7 @@ class InstagramStatisticsCommand extends Command
 {
     const INSTAGRAM_QUEUE_NAME = 'instagram-%d';
 
-    protected $signature = 'instagram:statistics';
+    protected $signature = 'instagram:statistics {--throttling=}';
 
     protected $description = 'Daily job to fetch user related information from the Instagram API';
 
@@ -22,28 +22,25 @@ class InstagramStatisticsCommand extends Command
      */
     private $instagramQueues;
 
-    private $throttling = 1;
+    private $throttling = 400;
 
     private $jobsProcessed = 0;
 
     /** @var Carbon */
     private $now;
 
-    public function setThrottling(int $throttling): self
-    {
-        $this->throttling = $throttling;
-    }
-
     public function __construct()
     {
         parent::__construct();
 
         $this->instagramQueues = config('instagram.queues');
-        $this->now = now();
     }
 
     public function handle(): void
     {
+        $this->getThrottlingOption();
+
+        $this->now = Carbon::now();
         $instagramUsers = InstagramUser::all();
 
         while ($instagramUsers->isNotEmpty()) {
@@ -59,6 +56,17 @@ class InstagramStatisticsCommand extends Command
             }
 
             $this->jobsProcessed++;
+        }
+    }
+
+    private function getThrottlingOption(): void
+    {
+        if (
+            $this->hasOption('throttling')
+            && is_int((int) $this->option('throttling'))
+            && (int) $this->option('throttling') !== 0
+        ) {
+            $this->throttling = (int) $this->option('throttling');
         }
     }
 

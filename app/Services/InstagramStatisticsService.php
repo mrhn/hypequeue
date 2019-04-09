@@ -32,7 +32,8 @@ class InstagramStatisticsService
         $statistic->fill(
             array_merge([
                 'date' => $date,
-            ], $data->toArray())
+            ], $data->toArray()
+            )
         );
 
         $user->statistics()->save($statistic);

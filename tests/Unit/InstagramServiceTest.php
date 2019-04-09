@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\InstagramUser;
 use App\Services\InstagramService;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,9 +28,10 @@ class InstagramServiceTest extends TestCase
      */
     public function testScrapeInstagram()
     {
-        $dto = $this->instagramService->scrape('mhenraabe');
+        $user = factory(InstagramUser::class, 1)->create()[0];
+        $dto = $this->instagramService->scrape($user);
 
-        $this->assertEquals(46, $dto->followers);
+        $this->assertEquals(45, $dto->followers);
         $this->assertEquals(53, $dto->followed);
         $this->assertEquals(2, $dto->posts);
     }
