@@ -14,6 +14,7 @@ How to handle them, from experience working with queues one of the more imporant
 
 To combat this i build a composite key on statistics based on day and user_id, when the job is running it checks if the entry is already there, if it is it does not created duplicate data, this makes it possible to rerun the job chain if something goes run. In my experience this usually comes in handy, when data is bad or similar.
 
+Why did i not choose the Laravel rate limiter, it abuses retrying jobs and as said in the documentation it can provide trouble and i have already tried to build a system only with the laravel rate limiter and it was not good. You could thou argue that a system with a combination of laravel rate limiter and a customer delayed solutions as i have would could be smart.
 ## Which edge cases could occour // Regressions
 
 - Instagram API going down
